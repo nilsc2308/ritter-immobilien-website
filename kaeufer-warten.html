@@ -13,10 +13,9 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0b2256">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preload" href="fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/instrument-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 
-<link rel="stylesheet" href="styles.css?v=202609291213">
+<link rel="stylesheet" href="styles.css?v=202609291239">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "RealEstateAgent", "@id": "https://www.ritterimmobilien.de/#firma", "name": "Ritter Immobilien e.K.", "url": "https://www.ritterimmobilien.de/", "telephone": "+49 2402 3477", "faxNumber": "+49 2402 9020970", "email": "info@ritterimmobilien.de", "image": "https://www.ritterimmobilien.de/img/flug-aussen-1600.webp", "logo": "https://www.ritterimmobilien.de/apple-touch-icon.png", "foundingDate": "1989", "founder": {"@type": "Person", "name": "Rudolf Ritter"}, "address": {"@type": "PostalAddress", "streetAddress": "Pfarrer-Gau-Str. 51", "postalCode": "52223", "addressLocality": "Stolberg", "addressRegion": "NRW", "addressCountry": "DE"}, "areaServed": ["Stolberg", "Eschweiler", "Aachen", "Würselen", "Roetgen", "Simmerath", "Jülich", "Düren"]}</script>
 </head>
 <body class="" data-page="kaeufer-warten">
@@ -59,29 +58,24 @@
  </div>
 </div>
 <main id="main">
-<section class="schild">
- <div class="wrap schild-grid">
-  <div class="schild-tafel">
-   <p class="kicker">Aktuelle Suchaufträge</p>
+<section class="kopf">
+ <div class="wrap">
+  <p class="crumb"><a href="index.html">Ritter Immobilien</a><span>/</span>Aktuelle Suchaufträge</p>
+  <div class="kopf-row">
    <h1 class="split">Käufer warten schon</h1>
    <p class="lead">Für diese Kunden suchen wir gerade. Passt Ihre Immobilie? Dann ist ein schneller, sicherer Verkauf gut möglich.</p>
   </div>
-  <figure class="schild-foto"><img class="" src="img/garten-eifel-1600.webp" srcset="img/garten-eifel-800.webp 800w, img/garten-eifel-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 46vw" width="1600" height="1067" alt="Garten mit Blick auf die bewaldeten Hügel der Eifel" fetchpriority="high"></figure>
  </div>
+ <figure class="kopf-foto"><img class="" src="img/garten-eifel-1600.webp" srcset="img/garten-eifel-800.webp 800w, img/garten-eifel-1600.webp 1600w" sizes="100vw" width="1600" height="1069" alt="Garten mit Blick auf die bewaldeten Hügel der Eifel" fetchpriority="high"></figure>
 </section>
 <section class="tool" id="werkzeug">
  <div class="wrap"><div class="tool-head"><h2>Suchaufträge abgleichen</h2><p class="lead">Drei Angaben genügen.</p></div><div class="matcher" id="abgleich-k" data-matcher>
-  <div class="m-q">
-   <fieldset><legend>Was möchten Sie verkaufen?</legend><div class="seg" data-m="typ" role="group"><button type="button" data-v="efh" aria-pressed="true">Einfamilienhaus</button><button type="button" data-v="dhh" aria-pressed="false">Doppelhaushälfte / Reihenhaus</button><button type="button" data-v="zfh" aria-pressed="false">Zweifamilienhaus</button><button type="button" data-v="mfh" aria-pressed="false">Mehrfamilienhaus</button><button type="button" data-v="etw" aria-pressed="false">Eigentumswohnung</button><button type="button" data-v="grund" aria-pressed="false">Grundstück</button><button type="button" data-v="garage" aria-pressed="false">Garage / Garagenhof</button></div></fieldset>
-   <fieldset><legend>Wo liegt die Immobilie?</legend><div class="seg" data-m="ort" role="group"><button type="button" data-v="stolberg" aria-pressed="true">Stolberg</button><button type="button" data-v="eschweiler" aria-pressed="false">Eschweiler</button><button type="button" data-v="aachen" aria-pressed="false">Aachen</button><button type="button" data-v="roetgen" aria-pressed="false">Roetgen / Eifel</button><button type="button" data-v="andere" aria-pressed="false">anderswo</button></div></fieldset>
-   <fieldset><legend>Ihre Preisvorstellung</legend><div class="seg" data-m="preis" role="group"><button type="button" data-v="150000" aria-pressed="false">bis 150.000 €</button><button type="button" data-v="350000" aria-pressed="true">bis 350.000 €</button><button type="button" data-v="600000" aria-pressed="false">bis 600.000 €</button><button type="button" data-v="999999999" aria-pressed="false">darüber</button></div></fieldset>
-   <label class="m-reno"><input type="checkbox" data-m-reno> Die Immobilie ist renovierungsbedürftig</label>
-  </div>
+  <p class="m-satz">Ich möchte <select data-m="typ" aria-label="typ"><option value="efh" selected>ein Einfamilienhaus</option><option value="dhh">eine Doppelhaushälfte</option><option value="zfh">ein Zweifamilienhaus</option><option value="mfh">ein Mehrfamilienhaus</option><option value="etw">eine Eigentumswohnung</option><option value="grund">ein Grundstück</option><option value="garage">Garagen</option></select> in <select data-m="ort" aria-label="ort"><option value="stolberg" selected>Stolberg</option><option value="eschweiler">Eschweiler</option><option value="aachen">Aachen</option><option value="roetgen">Roetgen und der Eifel</option><option value="andere">einem anderen Ort</option></select> verkaufen, meine Preisvorstellung liegt <select data-m="preis" aria-label="preis"><option value="150000">bis 150.000 €</option><option value="350000" selected>bis 350.000 €</option><option value="600000">bis 600.000 €</option><option value="999999999">über 600.000 €</option></select>.</p>
+  <label class="m-reno"><input type="checkbox" data-m-reno> Die Immobilie ist renovierungsbedürftig</label>
   <div class="m-out" aria-live="polite">
    <p class="m-num"><b data-m-n>0</b> <span data-m-label>vorgemerkte Suchaufträge passen</span></p>
    <ul class="m-list" data-m-list></ul>
-   <p class="muted small">Auszug aus unseren Suchaufträgen, Stand 12.09.2025. Viele Anfragen erreichen uns nur telefonisch – rufen Sie uns an, auch wenn hier nichts passt.</p>
-   <a class="btn mag" data-m-cta href="kontakt.html?thema=verkauf">Verkauf besprechen <span class="ar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+   <p class="m-foot"><a class="btn" data-m-cta href="kontakt.html?thema=verkauf">Verkauf besprechen</a><span class="muted small">Auszug unserer Suchaufträge, Stand 12.09.2025. Viele Anfragen erreichen uns nur telefonisch.</span></p>
   </div>
  </div></div>
 </section>
@@ -92,7 +86,7 @@
   <h2 class="split">Ihr Haus passt?</h2>
   <p>Rufen Sie uns unverbindlich an – wir freuen uns auf Ihren Anruf.</p>
   <div class="btns">
-   <a class="btn light mag" href="kontakt.html?thema=verkauf">Anfrage senden <span class="ar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+   <a class="btn light mag" href="kontakt.html?thema=verkauf">Anfrage senden</a>
    <a class="btn ghost light mag" href="tel:+4924023477"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="currentColor"/></svg> 02402 3477</a>
   </div>
  </div>
@@ -116,12 +110,12 @@
  <div class="wrap foot-bottom"><span>© 2026 Ritter Immobilien e.K.</span>
   <span><a href="impressum.html">Impressum</a> <a href="datenschutz.html">Datenschutz</a> <a href="agb.html">AGB</a> <a href="widerruf.html">Widerrufsbelehrung</a></span></div>
 </footer>
-<a class="sticky-cta" href="kontakt.html?thema=bewertung">Kostenlose Bewertung anfragen <span class="ar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+<a class="sticky-cta" href="kontakt.html?thema=bewertung">Kostenlose Bewertung anfragen</a>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js" defer></script>
-<script src="angebote.js?v=202609291213" defer></script>
-<script src="main.js?v=202609291213" defer></script>
-<script src="tools.js?v=202609291213" defer></script>
+<script src="angebote.js?v=202609291239" defer></script>
+<script src="main.js?v=202609291239" defer></script>
+<script src="tools.js?v=202609291239" defer></script>
 </body>
 </html>

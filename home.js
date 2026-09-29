@@ -1,8 +1,8 @@
 /* Ritter Immobilien – Startseite: Einstieg, „So verkaufen wir“ (Foto klebt, Kapitel laufen), Ortsteil-Register, Kundenstimmen. */
 (() => {
-  const X = window.RIX || {};
+  const X_ = window.RIX || {};
   const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
-  const motion = X.motion;
+  const motion = X_.motion;
 
   // ---------- Flug durch das Haus ----------
   const flug = $('.flug');
@@ -10,54 +10,35 @@
   if (document.readyState === 'complete') lazy(); else addEventListener('load', lazy);
   if (flug && !motion) lazy();
   if (flug && motion) {
-    const shots = $$('.fl', flug), blurs = $$('.fl-b', flug), texts = $$('.ft', flug);
-    const end = $('.fl-end', flug), flash = $('.fl-flash', flug), route = $$('.route li', flug), routeEl = $('.route', flug);
+    const stage = $('.flug-stage', flug), shots = $$('.fl', flug), blurs = $$('.fl-b', flug), subs = $$('.sub', flug);
+    const end = $('.fl-end', flug), title = $('.fl-title', flug), bar = $('.fl-time i', flug);
     const img = el => $('img', el);
-    const N = shots.length, STEP = 2.9, DIVE = 1.25;
-    const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: flug, start: 'top top', end: 'bottom bottom', scrub: .9 } });
-    // Öffnung (Glas, Tür, Fenster) als Rechteck um den Durchflugpunkt; wächst mit dem Zoom der Kamera
-    const opening = (el, s) => {
-      const fx = +el.dataset.fx, fy = +el.dataset.fy, ow = +el.dataset.ow, oh = +el.dataset.oh;
-      const w = ow / 2 * s, h = oh / 2 * s;
-      const t = Math.max(0, fy - h), b = Math.max(0, 100 - fy - h), l = Math.max(0, fx - w), r = Math.max(0, 100 - fx - w);
-      return `inset(${t.toFixed(2)}% ${r.toFixed(2)}% ${b.toFixed(2)}% ${l.toFixed(2)}% round ${Math.max(0, 14 - s * 2).toFixed(1)}px)`;
-    };
+    const N = shots.length, SEG = 3, X = .9;              // Länge je Raum, Dauer der Überblendung
+    const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: flug, start: 'top top', end: 'bottom bottom', scrub: 1.2 } });
     shots.forEach((sh, i) => {
-      const S = i * STEP;
-      // langsamer Vorwärtsflug mit leichter Drehung (Drohne)
-      tl.fromTo(img(sh), { scale: i ? .82 : 1.12, rotation: i % 2 ? .8 : -.8, yPercent: i ? 0 : 4 }, { scale: 1.3, rotation: i % 2 ? -.6 : .6, yPercent: 0, duration: 1.85 + (i ? DIVE : 0), ease: 'power1.inOut' }, i ? S - DIVE : 0);
-      // Text: rein nach dem Durchflug, raus vor dem nächsten
-      if (i) tl.fromTo(texts[i], { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: .4, ease: 'power3.out' }, S + .15);
-      tl.to(texts[i], { autoAlpha: 0, y: -26, duration: .3, ease: 'power2.in' }, S + (i ? 1.45 : 1.0));
-      // Durchflug ins nächste Zimmer (oder durch die Haustür nach draußen)
-      const D = S + 1.85, next = shots[i + 1] || end, o = { k: 1 };
-      const fx = sh.dataset.fx, fy = sh.dataset.fy;
-      // Kamera fliegt durch die Öffnung: Foto-Zoom und Öffnung wachsen im selben Takt
-      tl.set(next, { autoAlpha: 0, clipPath: opening(sh, 1) }, D)
-        .set(flash, { '--fx': fx + '%', '--fy': fy + '%' }, D)
-        .to(o, { k: 9, duration: DIVE, ease: 'power3.in', onUpdate: () => {
-          const sc = 1.3 * o.k; gsap.set([img(sh), img(blurs[i])], { scale: sc }); next.style.clipPath = opening(sh, o.k);
-        } }, D)
-        .to(next, { autoAlpha: 1, duration: DIVE * .35, ease: 'power1.out' }, D + DIVE * .05)
-        .set(blurs[i], { autoAlpha: 0 }, D)
-        .to(blurs[i], { autoAlpha: 1, duration: DIVE * .4 }, D + DIVE * .5)
-        .fromTo(flash, { opacity: 0 }, { opacity: i === N - 1 ? .9 : .5, duration: DIVE * .3, ease: 'power2.out' }, D + DIVE * .45)
-        .to(flash, { opacity: 0, duration: DIVE * .3, ease: 'power2.in' }, D + DIVE * .8)
-        .set(next, { clipPath: 'none' }, D + DIVE)
-        .set([sh, blurs[i]], { autoAlpha: 0 }, D + DIVE + .01);
+      const S = i * SEG, E = S + SEG;
+      // durchgehende Vorwärtsfahrt mit leichter Drehung – nie ein Stillstand
+      tl.fromTo(img(sh), { scale: 1, rotation: i % 2 ? .5 : -.5 }, { scale: 1.3, rotation: i % 2 ? -.4 : .4, duration: SEG - X }, i ? S - .1 : 0);
+      // Übergang: weiter hineinfliegen, unscharf werden, nächster Raum blendet auf
+      const next = shots[i + 1] || end;
+      tl.to(img(sh), { scale: 2, duration: X + .1, ease: 'power1.in' }, E - X)
+        .fromTo(img(blurs[i]), { scale: 1.3 }, { scale: 2, duration: X + .1, ease: 'power1.in' }, E - X)
+        .fromTo(blurs[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: X * .55, ease: 'power1.in' }, E - X)
+        .fromTo(next, { autoAlpha: 0 }, { autoAlpha: 1, duration: X * .6, ease: 'power1.out' }, E - X * .55)
+        .set([sh, blurs[i]], { autoAlpha: 0 }, E + .1);
+      // Untertitel nacheinander, nie gleichzeitig
+      const tin = i ? S + .45 : 1.35, tout = E - X - .35;
+      tl.fromTo(subs[i], { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .35, ease: 'power2.out' }, tin)
+        .to(subs[i], { autoAlpha: 0, y: -8, duration: .3, ease: 'power2.in' }, tout);
     });
-    const E = N * STEP - STEP + 1.85 + 1.25;
-    tl.from($$('.fl-end-in > *', end), { opacity: 0, y: 30, duration: .5, stagger: .08, ease: 'power3.out' }, E + .05)
-      .to({}, { duration: 1.2 }, E + .6);
-    // Flugroute rechts
-    const setRoute = () => {
-      const t = tl.time(); let k = Math.min(N, Math.floor((t + .5 - 1.85 - 1.25) / STEP) + 1);
-      if (t < 1.85 + 1.25) k = 0;
-      route.forEach((li, j) => li.classList.toggle('on', j === k));
-      routeEl.classList.toggle('dark', k === N);
-    };
-    tl.eventCallback('onUpdate', setRoute); setRoute();
-    gsap.from($$('.ft0 > *'), { opacity: 0, y: 26, duration: 1, stagger: .1, ease: 'power3.out', delay: (X.introDelay ? X.introDelay() : 0) + .15 });
+    tl.to(title, { autoAlpha: 0, y: -20, duration: .5, ease: 'power2.in' }, .6);
+    const T = N * SEG;
+    tl.from($$('.fl-end-in > *', end), { opacity: 0, y: 26, duration: .5, stagger: .08, ease: 'power3.out' }, T - .2)
+      .to({}, { duration: 1.4 }, T + .4);
+    tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: T, ease: 'none' }, 0);
+    // leichte Handkamera-Bewegung
+    tl.eventCallback('onUpdate', () => { const t = tl.time(); stage.style.setProperty('--dx', (Math.sin(t * 1.9) * 5).toFixed(2) + 'px'); stage.style.setProperty('--dy', (Math.cos(t * 1.4) * 4).toFixed(2) + 'px'); });
+    gsap.from(title, { opacity: 0, y: 24, duration: 1.1, ease: 'power3.out', delay: (X_.introDelay ? X_.introDelay() : 0) + .1 });
     addEventListener('resize', () => ScrollTrigger.refresh());
   }
 

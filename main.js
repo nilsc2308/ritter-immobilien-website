@@ -41,7 +41,7 @@
   let lastY = scrollY;
   const onScroll = () => {
     const y = scrollY;
-    const overZone = overStart && hero && y < hero.offsetHeight - 90;
+    const overZone = overStart && hero && y < hero.offsetHeight - innerHeight * 1.7;
     if (overStart) head.classList.toggle('over', !!overZone && !document.body.classList.contains('menu-open'));
     if (!document.body.classList.contains('menu-open') && !dds.some(li => li.classList.contains('open'))) {
       if (!overZone && y > 300 && y > lastY + 6 && y - lastY < 400) head.classList.add('hide');
@@ -147,13 +147,13 @@
     if (!motion) return;
     $$('.split').forEach(el => {
       if (el._rv) return; el._rv = 1;
-      const top = el.closest('.schild, .hero, .flug');
+      const top = el.closest('.kopf, .hero, .flug');
       gsap.to($$('.w', el), { y: 0, duration: .9, ease: 'power4.out', stagger: .045, delay: top ? introDelay + .1 : 0, scrollTrigger: top ? null : { trigger: el, start: 'top 88%', once: true } });
     });
-    $$('.lead, .kicker, .schild-foto, .ticks li, .facts div, .qa, .rg-list li, .form, .cols2 > div, .tool-head, .va-grid figure, .contact-list li, .such-list li, .partner li, .hinweis').forEach(el => {
+    $$('.lead, .kopf-foto, .ticks li, .facts div, .qa, .rg-list li, .form, .cols2 > div, .tool-head, .va-grid figure, .contact-list li, .such-list li, .partner li, .hinweis').forEach(el => {
       if (el._rv || el.closest('.hero') || el.closest('.flug') || el.closest('.menu')) return; el._rv = 1;
       el.classList.add('rv');
-      const top = el.closest('.schild');
+      const top = el.closest('.kopf');
       gsap.to(el, { opacity: 1, y: 0, duration: .8, ease: 'power3.out', delay: top ? introDelay + .3 : 0, scrollTrigger: top ? null : { trigger: el, start: 'top 92%', once: true } });
     });
   };

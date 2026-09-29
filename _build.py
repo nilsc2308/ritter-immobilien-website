@@ -28,8 +28,9 @@ REFS = load('_quelle/referenzen.json')
 # ---------------------------------------------------------------- Bausteine
 def img(name, alt, cls='', sizes='100vw', eager=False, w=1600, h=1067):
     load_ = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
-    return (f'<img class="{cls}" src="img/{name}-1600.webp" srcset="img/{name}-800.webp 800w, img/{name}-1600.webp 1600w" '
-            f'sizes="{sizes}" width="{w}" height="{h}" alt="{e(alt)}" {load_}>')
+    dim = GR.get(f'{name}-1600.webp', [w, h])
+    return (f'<img class="{cls}" src="img/{name}-1600.webp" srcset="{srcset(name)}" '
+            f'sizes="{sizes}" width="{dim[0]}" height="{dim[1]}" alt="{e(alt)}" {load_}>')
 
 LOGO = '''<svg class="logo-svg" viewBox="0 0 250 56" role="img" aria-label="Ritter Immobilien e.K.">
 <g class="logo-mark"><path d="M4 22 L24 4 L44 22 V52 H4 Z" fill="none" stroke-width="3.2" stroke-linejoin="round"/><rect x="11" y="26" width="26" height="20" rx="1.5" fill="none" stroke-width="2.4"/><text x="24" y="42" text-anchor="middle" class="logo-ri">Ri</text></g>
@@ -108,7 +109,7 @@ def footer(p):
  <div class="wrap foot-bottom"><span>© {datetime.date.today().year} {FIRMA}</span>
   <span><a href="impressum.html">Impressum</a> <a href="datenschutz.html">Datenschutz</a> <a href="agb.html">AGB</a> <a href="widerruf.html">Widerrufsbelehrung</a></span></div>
 </footer>
-<a class="sticky-cta" href="kontakt.html?thema=bewertung">Kostenlose Bewertung anfragen {arrow()}</a>'''
+<a class="sticky-cta" href="kontakt.html?thema=bewertung">Kostenlose Bewertung anfragen</a>'''
 
 LD_BIZ = {
  "@context": "https://schema.org", "@type": "RealEstateAgent", "@id": BASE + "#firma",
@@ -138,8 +139,7 @@ def head(p):
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0b2256">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preload" href="fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/instrument-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 {p.get('preload', '')}
 <link rel="stylesheet" href="styles.css?v={V}">
 {ld}
@@ -168,15 +168,16 @@ def page(p, body):
 
 # ---------------------------------------------------------------- Unterseiten-Kopf „Hausschild“
 def schild(title, lead, photo, alt, kicker=''):
-    return f'''<section class="schild">
- <div class="wrap schild-grid">
-  <div class="schild-tafel">
-   {f'<p class="kicker">{e(kicker)}</p>' if kicker else ''}
+    crumb = f'<p class="crumb"><a href="index.html">Ritter Immobilien</a><span>/</span>{e(kicker)}</p>' if kicker else ''
+    return f'''<section class="kopf">
+ <div class="wrap">
+  {crumb}
+  <div class="kopf-row">
    <h1 class="split">{e(title)}</h1>
    <p class="lead">{lead}</p>
   </div>
-  <figure class="schild-foto">{img(photo, alt, '', '(max-width: 860px) 100vw, 46vw', True)}</figure>
  </div>
+ <figure class="kopf-foto">{img(photo, alt, '', '100vw', True)}</figure>
 </section>'''
 
 def cta(title='Sprechen wir über Ihre Immobilie.', text='Ein unverbindliches Gespräch, gern bei Ihnen vor Ort. Wir melden uns schnellstmöglich zurück.', thema=''):
@@ -186,7 +187,7 @@ def cta(title='Sprechen wir über Ihre Immobilie.', text='Ein unverbindliches Ge
   <h2 class="split">{e(title)}</h2>
   <p>{e(text)}</p>
   <div class="btns">
-   <a class="btn light mag" href="kontakt.html{q}">Anfrage senden {arrow()}</a>
+   <a class="btn light mag" href="kontakt.html{q}">Anfrage senden</a>
    <a class="btn ghost light mag" href="tel:{TEL_L}">{ICON['phone']} {TEL}</a>
   </div>
  </div>
@@ -210,7 +211,7 @@ def form(thema_default='', titel='Ihre Nachricht'):
   <label>Nachricht<textarea name="nachricht" rows="4" placeholder="Zum Beispiel: Einfamilienhaus in Stolberg-Breinig, Baujahr 1975, Verkauf im Frühjahr geplant."></textarea></label>
   <label class="check"><input type="checkbox" name="datenschutz" required> <span>Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage gespeichert werden (<a href="datenschutz.html">Datenschutz</a>).*</span></label>
   <p class="form-err" role="alert" hidden></p>
-  <button class="btn mag" type="submit">Absenden {arrow()}</button>
+  <button class="btn mag" type="submit">Absenden</button>
  </form>'''
 
 # ---------------------------------------------------------------- Suchaufträge (Stand der alten Seite 12.09.2025)
@@ -228,22 +229,17 @@ SUCH = [
 ]
 
 def matcher(ident='abgleich'):
-    typen = [('efh', 'Einfamilienhaus'), ('dhh', 'Doppelhaushälfte / Reihenhaus'), ('zfh', 'Zweifamilienhaus'), ('mfh', 'Mehrfamilienhaus'), ('etw', 'Eigentumswohnung'), ('grund', 'Grundstück'), ('garage', 'Garage / Garagenhof')]
-    orte = [('stolberg', 'Stolberg'), ('eschweiler', 'Eschweiler'), ('aachen', 'Aachen'), ('roetgen', 'Roetgen / Eifel'), ('andere', 'anderswo')]
-    preise = [('150000', 'bis 150.000 €'), ('350000', 'bis 350.000 €'), ('600000', 'bis 600.000 €'), ('999999999', 'darüber')]
-    seg = lambda name, opts, sel: f'<div class="seg" data-m="{name}" role="group">' + ''.join(f'<button type="button" data-v="{v}" aria-pressed="{"true" if v == sel else "false"}">{t}</button>' for v, t in opts) + '</div>'
+    typen = [('efh', 'ein Einfamilienhaus'), ('dhh', 'eine Doppelhaushälfte'), ('zfh', 'ein Zweifamilienhaus'), ('mfh', 'ein Mehrfamilienhaus'), ('etw', 'eine Eigentumswohnung'), ('grund', 'ein Grundstück'), ('garage', 'Garagen')]
+    orte = [('stolberg', 'Stolberg'), ('eschweiler', 'Eschweiler'), ('aachen', 'Aachen'), ('roetgen', 'Roetgen und der Eifel'), ('andere', 'einem anderen Ort')]
+    preise = [('150000', 'bis 150.000 €'), ('350000', 'bis 350.000 €'), ('600000', 'bis 600.000 €'), ('999999999', 'über 600.000 €')]
+    sel = lambda name, opts, v: f'<select data-m="{name}" aria-label="{name}">' + ''.join(f'<option value="{k}"{" selected" if k == v else ""}>{t}</option>' for k, t in opts) + '</select>'
     return f'''<div class="matcher" id="{ident}" data-matcher>
-  <div class="m-q">
-   <fieldset><legend>Was möchten Sie verkaufen?</legend>{seg('typ', typen, 'efh')}</fieldset>
-   <fieldset><legend>Wo liegt die Immobilie?</legend>{seg('ort', orte, 'stolberg')}</fieldset>
-   <fieldset><legend>Ihre Preisvorstellung</legend>{seg('preis', preise, '350000')}</fieldset>
-   <label class="m-reno"><input type="checkbox" data-m-reno> Die Immobilie ist renovierungsbedürftig</label>
-  </div>
+  <p class="m-satz">Ich möchte {sel('typ', typen, 'efh')} in {sel('ort', orte, 'stolberg')} verkaufen, meine Preisvorstellung liegt {sel('preis', preise, '350000')}.</p>
+  <label class="m-reno"><input type="checkbox" data-m-reno> Die Immobilie ist renovierungsbedürftig</label>
   <div class="m-out" aria-live="polite">
    <p class="m-num"><b data-m-n>0</b> <span data-m-label>vorgemerkte Suchaufträge passen</span></p>
    <ul class="m-list" data-m-list></ul>
-   <p class="muted small">Auszug aus unseren Suchaufträgen, Stand 12.09.2025. Viele Anfragen erreichen uns nur telefonisch – rufen Sie uns an, auch wenn hier nichts passt.</p>
-   <a class="btn mag" data-m-cta href="kontakt.html?thema=verkauf">Verkauf besprechen {arrow()}</a>
+   <p class="m-foot"><a class="btn" data-m-cta href="kontakt.html?thema=verkauf">Verkauf besprechen</a><span class="muted small">Auszug unserer Suchaufträge, Stand 12.09.2025. Viele Anfragen erreichen uns nur telefonisch.</span></p>
   </div>
  </div>'''
 
@@ -275,16 +271,16 @@ def stimmen_karussell():
     items = ''.join(f'<figure class="st-item" data-i="{i}"{"" if i == 0 else " hidden"}><blockquote>„{e(t)}“</blockquote><figcaption><b>{e(n)}</b> · {e(o)}</figcaption></figure>' for i, (o, t, n) in enumerate(STIMMEN[:10]))
     return f'''<div class="stimmen" data-stimmen>
    <div class="st-stage">{items}</div>
-   <div class="st-nav"><button type="button" class="st-prev" aria-label="Vorherige Stimme">‹</button><span data-st-n>1 / 10</span><button type="button" class="st-next" aria-label="Nächste Stimme">›</button><a href="kundenstimmen.html">Alle Kundenstimmen {arrow()}</a></div>
+   <div class="st-nav"><button type="button" class="st-prev" aria-label="Vorherige Stimme">‹</button><span data-st-n>1 / 10</span><button type="button" class="st-next" aria-label="Nächste Stimme">›</button><a href="kundenstimmen.html">Alle Kundenstimmen</a></div>
   </div>'''
 
 # ---------------------------------------------------------------- Startseite
 KAPITEL = [
- ('bruchstein-hof', 'Innenhof eines Bruchsteinhauses mit Garten', 'Bewertung vor Ort', 'Am Anfang steht immer die exakte, marktgerechte Bewertung – bei Ihnen zu Hause, nicht per Online-Rechner. Lage, Zustand, Ausstattung und Baujahr sieht nur, wer vor Ort ist.'),
+ ('glas-diele', 'Helle Diele mit Treppe und Blick auf die Haustür', 'Bewertung vor Ort', 'Am Anfang steht immer die exakte, marktgerechte Bewertung – bei Ihnen zu Hause, nicht per Online-Rechner. Lage, Zustand, Ausstattung und Baujahr sieht nur, wer vor Ort ist.'),
  ('wohnen-holz', 'Helles Wohnzimmer mit Holzdecke und Kaminofen', 'Individuelle Vermarktung', 'Jede Immobilie bekommt ihr eigenes Verkaufskonzept: Wir arbeiten die Besonderheiten heraus und präsentieren sie so, dass die richtigen Käufer anfragen. Auf Wunsch diskret, ganz ohne öffentliche Anzeige.'),
  ('essplatz', 'Essplatz mit Bücherwand in einem verkauften Haus', 'Keine Sammelbesichtigungen', 'Open-House-Termine machen wir nicht. Jede Besichtigung ist persönlich begleitet – niemand wird allein durch Ihr Haus geschickt.'),
  ('garten-eifel', 'Großer Garten mit Blick auf bewaldete Hügel der Eifel', 'Vorgemerkte, geprüfte Käufer', 'Viele unserer Kaufinteressenten warten schon auf das passende Haus. Ihre Bonität prüfen wir vorab – so ist die Kaufpreiszahlung abgesichert.'),
- ('steinwand', 'Wohnzimmer mit Bruchsteinwand, Kamin und Kronleuchter', 'Bis zum Notar – und danach', 'Wir begleiten Sie bis zum Notartermin und sind auch nach der Vertragsunterzeichnung für Sie da. Auf Wunsch kümmern wir uns um Haushaltsauflösungen, zum Beispiel nach einem Erbe.'),
+ ('glas-wohnen', 'Heller Wohn- und Essbereich mit Parkett und Gartentüren', 'Bis zum Notar – und danach', 'Wir begleiten Sie bis zum Notartermin und sind auch nach der Vertragsunterzeichnung für Sie da. Auf Wunsch kümmern wir uns um Haushaltsauflösungen, zum Beispiel nach einem Erbe.'),
 ]
 
 def ortsteile():
@@ -297,49 +293,49 @@ def ortsteile():
     return rows, len(REFS), rest
 
 FLUG = [
- # Bild, Alt, Durchflugpunkt (x %, y %), Öffnung (Breite %, Höhe %), Raum, Kicker, Titel, Text
- ('flug-aussen', 'Modernes Haus mit Glasgiebel, Terrasse und Seerosenteich – von Ritter Immobilien verkauft', (62, 40), (13, 18), 'Garten',
-  'Immobilienmakler in Stolberg · seit 1989', 'Wo Träume ein Zuhause finden.', 'Kommen Sie mit: So erleben Käufer ein Haus, das wir präsentieren – von außen bis zur Haustür.'),
- ('flug-wintergarten', 'Verglaster Wintergarten mit Pflanzen und Sitzecke', (7, 34), (9, 40), 'Wintergarten',
-  'Präsentation', 'Jedes Haus hat seinen besten Blick.', '„Bei den Bildern, die Herr Ritter von meiner Wohnung gemacht hat, war ich kurz davor, die Wohnung zu behalten.“ – T. L., Stolberg'),
- ('flug-wohnen', 'Heller Wohn- und Essbereich mit Parkett und Gartentüren', (57, 45), (11, 26), 'Wohnen',
-  'Besichtigung', 'Keine Sammel\u00adbesichtigungen.', 'Jeder Termin ist persönlich begleitet – niemand wird allein durch Ihr Haus geschickt.'),
- ('flug-kueche', 'Küche mit Holzfronten und Essplatz am Fenster', (17, 24), (14, 26), 'Küche',
-  'Vorgemerkte Käufer', 'Käufer warten schon.', 'Für Familien, Paare und Anleger suchen wir bereits – oft ist der passende Käufer vorgemerkt und geprüft.'),
- ('flug-diele', 'Diele mit Holztreppe und Blick auf die Haustür', (49, 37), (8, 20), 'Diele',
-  'Bis zum Notar', 'Und darüber hinaus.', 'Wir begleiten Sie bis zur Schlüsselübergabe – und sind auch nach der Vertragsunterzeichnung für Sie da.'),
+ # Bild, Alt, Zielpunkt der Kamera (x %, y %), Untertitel
+ ('flug-aussen', 'Stolberger Bruchsteinhaus mit Hofweg und Garten – von Ritter Immobilien verkauft', (46, 42), 'Ein Bruchsteinhaus in Stolberg. Von uns verkauft.'),
+ ('flug-diele', 'Diele mit Holztreppe, Wandleuchtern und Natursteinboden', (45, 40), 'Wir zeigen jedes Haus so, wie Käufer es erleben.'),
+ ('flug-wohnen', 'Wohnzimmer mit Bruchsteinwand, Kamin, Kronleuchter und Ledersofas', (80, 36), 'Jede Besichtigung persönlich begleitet.'),
+ ('flug-garten', 'Garten mit Palmen, Trittplatten und Rasen', (52, 50), 'Bis zur Übergabe der Schlüssel – und danach.'),
 ]
 
+GR = json.load(open(os.path.join(ROOT, '_quelle', 'bildgroessen.json')))
+def srcset(name):
+    out = []
+    for w in (800, 1600, 2400):
+        f = f'{name}-{w}.webp'
+        if f in GR and not any(GR[f][0] == GR.get(f'{name}-{x}.webp', [0])[0] for x in (800, 1600) if x < w):
+            out.append(f'img/{f} {GR[f][0]}w')
+    return ', '.join(out)
+
 def flug():
-    slides, blurs, texts = [], [], []
-    for i, (n, alt, (fx, fy), (ow, oh), raum, k, t, d) in enumerate(FLUG):
-        src = (f'src="img/{n}-1600.webp" srcset="img/{n}-800.webp 800w, img/{n}-1600.webp 1600w" fetchpriority="high"' if i == 0
-               else f'data-src="img/{n}-1600.webp" data-srcset="img/{n}-800.webp 800w, img/{n}-1600.webp 1600w"')
-        slides.append(f'<div class="fl fl{i}" data-fx="{fx}" data-fy="{fy}" data-ow="{ow}" data-oh="{oh}" style="--fx:{fx}%;--fy:{fy}%"><img {src} sizes="100vw" width="1600" height="1067" alt="{e(alt)}"></div>')
+    slides, blurs, subs = [], [], []
+    for i, (n, alt, (fx, fy), sub) in enumerate(FLUG):
+        ss = srcset(n)
+        src = (f'src="img/{n}-1600.webp" srcset="{ss}" fetchpriority="high"' if i == 0 else f'data-src="img/{n}-1600.webp" data-srcset="{ss}"')
+        slides.append(f'<div class="fl fl{i}" style="--fx:{fx}%;--fy:{fy}%"><img {src} sizes="100vw" width="2400" height="1600" alt="{e(alt)}"></div>')
         blurs.append(f'<div class="fl-b fl-b{i}" aria-hidden="true" style="--fx:{fx}%;--fy:{fy}%"><img data-src="img/{n}-blur.webp" alt="" width="640" height="427"></div>')
-        h = 'h1' if i == 0 else 'h2'
-        hid = '' if i == 0 else ' aria-hidden="true"'
-        texts.append(f'<div class="ft ft{i}"{hid}><p class="kicker">{e(k)}</p><{h}>{e(t)}</{h}><p class="ft-p">{e(d)}</p></div>')
-    route = ''.join(f'<li data-i="{i}"><span>{e(r[4])}</span></li>' for i, r in enumerate(FLUG)) + f'<li data-i="{len(FLUG)}"><span>Ankommen</span></li>'
-    return f'''<section class="flug" id="flug" aria-label="Flug durch ein von Ritter Immobilien verkauftes Haus">
+        subs.append(f'<p class="sub sub{i}">{e(sub)}</p>')
+    return f'''<section class="flug" id="flug" aria-label="Kamerafahrt durch ein von Ritter Immobilien verkauftes Bruchsteinhaus in Stolberg">
  <div class="flug-stage">
   {''.join(slides)}{''.join(blurs)}
-  <div class="fl-flash" aria-hidden="true"></div>
-  <div class="fl-scrim" aria-hidden="true"></div>
-  {''.join(texts)}
-  <div class="fl-end" aria-labelledby="end-h">
+  <div class="fl-grade" aria-hidden="true"></div>
+  <div class="fl-title">
+   <h1>Ritter Immobilien<br><span>Stolberg, seit 1989</span></h1>
+  </div>
+  <div class="subs" aria-live="off">{''.join(subs)}</div>
+  <div class="fl-time" aria-hidden="true"><i></i></div>
+  <div class="fl-end">
    <div class="wrap fl-end-in">
-    <p class="kicker">Willkommen zu Hause</p>
-    <h2 id="end-h">Wie dürfen wir helfen?</h2>
+    <h2>Wie dürfen wir helfen?</h2>
     <div class="paths">
-     <a class="path mag" href="angebote.html"><span class="p-k">Ich suche ein Zuhause</span><span class="p-t"><b data-live-count>9</b> aktuelle Angebote</span>{arrow()}</a>
-     <a class="path mag" href="kaeufer-warten.html"><span class="p-k">Ich möchte verkaufen</span><span class="p-t"><b>{len(SUCH)}</b> Suchaufträge warten</span>{arrow()}</a>
+     <a class="path" href="angebote.html"><span class="p-k">Ich suche ein Zuhause</span><span class="p-t"><b data-live-count>9</b> aktuelle Angebote</span></a>
+     <a class="path" href="kaeufer-warten.html"><span class="p-k">Ich möchte verkaufen</span><span class="p-t"><b>{len(SUCH)}</b> Suchaufträge warten</span></a>
     </div>
-    <p class="fl-end-tel">Oder direkt: <a href="tel:{TEL_L}">{TEL}</a></p>
+    <p class="fl-end-tel">Oder anrufen: <a href="tel:{TEL_L}">{TEL}</a></p>
    </div>
   </div>
-  <ol class="route" aria-hidden="true">{route}</ol>
-  <p class="fl-note">Echte Fotos eines von uns verkauften Hauses</p>
  </div>
 </section>'''
 
@@ -350,8 +346,8 @@ def home():
     body = flug() + f'''
 <section class="offers" id="angebote" aria-labelledby="off-h">
  <div class="wrap">
-  <div class="sec-head row"><div><p class="kicker">Aktuelle Angebote</p><h2 id="off-h" class="split">Gerade zu haben.</h2></div>
-   <a class="linkbtn" href="angebote.html">Alle <span data-live-count></span> Angebote {arrow()}</a></div>
+  <div class="sec-head row"><div><h2 id="off-h" class="split">Gerade zu haben.</h2></div>
+   <a class="linkbtn" href="angebote.html">Alle <span data-live-count></span> Angebote</a></div>
   <div class="grid-offers" data-offers="6"><p class="muted">Angebote werden geladen …</p></div>
   <p class="muted small offers-note" data-offers-note></p>
  </div>
@@ -359,7 +355,7 @@ def home():
 
 <section class="wait" id="kaeufer" aria-labelledby="wait-h">
  <div class="wrap">
-  <div class="sec-head"><p class="kicker">Für Eigentümer</p><h2 id="wait-h" class="split">Käufer warten schon.</h2>
+  <div class="sec-head"><h2 id="wait-h" class="split">Käufer warten schon.</h2>
    <p class="lead">Für viele Familien, Paare und Anleger suchen wir bereits. Sagen Sie uns, was Sie verkaufen möchten – und sehen Sie, welche Suchaufträge passen.</p></div>
   {matcher()}
  </div>
@@ -367,10 +363,10 @@ def home():
 
 <section class="story" aria-labelledby="story-h">
  <div class="wrap">
-  <div class="sec-head"><p class="kicker">So verkaufen wir</p><h2 id="story-h" class="split">Persönlich, von der Bewertung bis zum Notar.</h2></div>
+  <div class="sec-head"><h2 id="story-h" class="split">Persönlich, von der Bewertung bis zum Notar.</h2></div>
   <div class="sv-grid">
    <div class="sv-sticky">{kap_img}</div>
-   <div class="sv-text">{kap_txt}<a class="btn mag" href="verkaufen.html">Mehr zum Verkauf {arrow()}</a></div>
+   <div class="sv-text">{kap_txt}<a class="btn mag" href="verkaufen.html">Mehr zum Verkauf</a></div>
   </div>
  </div>
 </section>
@@ -378,10 +374,9 @@ def home():
 <section class="orte dark" aria-labelledby="orte-h">
  <div class="wrap orte-grid">
   <div>
-   <p class="kicker">Referenzen</p>
    <h2 id="orte-h" class="split">Zuhause in jedem Ortsteil.</h2>
    <p class="lead">{total} vermittelte Häuser und Wohnungen stehen allein auf unserer Referenzliste – die meisten in Stolberg, von Breinig bis Zweifall. Dazu {rest} weitere in Alsdorf, Inden, Simmerath und anderswo.</p>
-   <a class="btn light mag" href="referenzen.html">Alle Referenzen {arrow()}</a>
+   <a class="btn light mag" href="referenzen.html">Alle Referenzen</a>
   </div>
   <ul class="ot-list">{rows}</ul>
  </div>
@@ -389,7 +384,7 @@ def home():
 
 <section class="voices" aria-labelledby="voices-h">
  <div class="wrap">
-  <div class="sec-head"><p class="kicker">Kundenstimmen</p><h2 id="voices-h" class="split">Was Verkäufer sagen.</h2></div>
+  <div class="sec-head"><h2 id="voices-h" class="split">Was Verkäufer sagen.</h2></div>
   {stimmen_karussell()}
  </div>
 </section>
@@ -398,7 +393,6 @@ def home():
  <div class="wrap team-grid">
   <div class="team-l">
    <figure class="team-foto">{img('team', 'Rudolf Ritter und seine Tochter Maike Steyns', '', '(max-width: 900px) 100vw, 45vw')}</figure>
-   <p class="kicker">Ihr Team</p>
    <h2 id="team-h" class="split">Vater und Tochter.</h2>
    <p><b>Rudolf Ritter</b>, Immobilienmakler – Gründer und Inhaber, seit über 35 Jahren am Markt in der StädteRegion Aachen.<br><b>Maike Steyns</b>, Immobilienfachwirtin (IHK) und Immobilienmaklerin (IHK) – seit 2017 im Familienbetrieb, zuständig für Verkauf und Vermietung von Wohnimmobilien.</p>
    <p class="team-kontakt"><a href="tel:{TEL_L}">{ICON['phone']} {TEL}</a><a href="mailto:{MAIL}">{ICON['mail']} {MAIL}</a></p>
@@ -408,7 +402,7 @@ def home():
 </section>'''
     page({'file': 'index.html', 'title': 'Ritter Immobilien – Immobilienmakler in Stolberg seit 1989', 'desc': 'Familiengeführter Immobilienmakler in Stolberg: Verkauf, Vermietung, Bewertung und Hausverwaltung in Stolberg, Eschweiler, Aachen und der Eifel.',
           'over': True, 'body': 'home', 'js': ['tools.js', 'home.js'],
-          'preload': '<link rel="preload" as="image" href="img/flug-aussen-1600.webp" imagesrcset="img/flug-aussen-800.webp 800w, img/flug-aussen-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">'}, body)
+          'preload': '<link rel="preload" as="image" href="img/flug-aussen-1600.webp" imagesrcset="' + srcset('flug-aussen') + '" imagesizes="100vw" fetchpriority="high">'}, body)
 
 # ---------------------------------------------------------------- Angebote + Exposé
 def angebote():
@@ -427,7 +421,7 @@ def angebote():
   <aside class="hinweis">
    <h2>Nicht alles steht online.</h2>
    <p>Auf Wunsch einiger Eigentümer veröffentlichen wir nicht jedes Angebot – und manche nur ohne Fotos. Bei besonderen Immobilien legen unsere Kunden Wert auf eine diskrete Vermittlung ohne öffentliche Werbung. Sagen Sie uns, was Sie suchen: Wir nehmen Sie in unsere Kartei auf und melden uns, sobald etwas passt.</p>
-   <a class="btn mag" href="kontakt.html?thema=suche">Suchauftrag hinterlassen {arrow()}</a>
+   <a class="btn mag" href="kontakt.html?thema=suche">Suchauftrag hinterlassen</a>
   </aside>
  </div>
 </section>''' + cta('Ihr Traumhaus ist nicht dabei?', 'Viele Objekte vermitteln wir, bevor sie online stehen. Hinterlassen Sie uns Ihren Suchauftrag.', 'suche')
@@ -447,7 +441,7 @@ def objekt():
     <h1 data-o="titel">Exposé</h1>
     <p class="obj-price" data-o="preis"></p>
     <dl class="obj-keys" data-o="keys"></dl>
-    <div class="btns col"><a class="btn mag" data-o="anfrage" href="kontakt.html?thema=objekt">Besichtigung anfragen {arrow()}</a><a class="btn ghost mag" href="tel:{TEL_L}">{ICON['phone']} {TEL}</a></div>
+    <div class="btns col"><a class="btn mag" data-o="anfrage" href="kontakt.html?thema=objekt">Besichtigung anfragen</a><a class="btn ghost mag" href="tel:{TEL_L}">{ICON['phone']} {TEL}</a></div>
    </div>
   </aside>
  </div>
@@ -472,7 +466,7 @@ def objekt():
 # ---------------------------------------------------------------- Eigentümer-Seiten
 def verkaufen():
     zus = ['Professionelle, kompetente und ehrliche Beratung', 'Vermeidung von Besichtigungstourismus – keine Sammelbesichtigungen (Open House)', 'Persönliche Kundenbetreuung', 'Durchsetzung des maximal möglichen Kaufpreises', 'Schneller Verkauf durch vorgemerkte Kunden', 'Diskreter und lautloser Verkauf auf Wunsch', 'Absicherung der Kaufpreiszahlung durch Bonitätsprüfung der Käufer', 'Service für Senioren: Beratung zu den Möglichkeiten des Wohnens im Alter', 'Haushaltsauflösungen, zum Beispiel nach einer Erbschaft, auf Wunsch', 'Haftungssicherer Verkauf (Vermögensschadenhaftpflicht)']
-    body = schild('Immobilie verkaufen', 'Sie möchten Ihr Haus, Ihre Wohnung oder Ihr Grundstück verkaufen? Wir entwerfen für jede Immobilie ein eigenes Verkaufskonzept – und haben oft schon den passenden Käufer.', 'bruchstein-hof', 'Innenhof eines Stolberger Bruchsteinhauses', 'Für Eigentümer') + f'''
+    body = schild('Immobilie verkaufen', 'Sie möchten Ihr Haus, Ihre Wohnung oder Ihr Grundstück verkaufen? Wir entwerfen für jede Immobilie ein eigenes Verkaufskonzept – und haben oft schon den passenden Käufer.', 'glas-diele', 'Helle Diele mit Treppe', 'Für Eigentümer') + f'''
 <section class="text-sec">
  <div class="wrap cols2">
   <div><h2>Das sichern wir Ihnen zu</h2><ul class="ticks">{''.join('<li>' + e(z) + '</li>' for z in zus)}</ul></div>
@@ -482,7 +476,7 @@ def verkaufen():
  </div>
 </section>
 <section class="tool" id="werkzeug">
- <div class="wrap"><div class="tool-head"><p class="kicker">Selbst ausprobieren</p><h2>Käufer warten schon</h2><p class="lead">Wählen Sie Art, Ort und Preisrahmen – wir zeigen Ihnen, welche unserer vorgemerkten Suchaufträge passen.</p></div>
+ <div class="wrap"><div class="tool-head"><h2>Käufer warten schon</h2><p class="lead">Wählen Sie Art, Ort und Preisrahmen – wir zeigen Ihnen, welche unserer vorgemerkten Suchaufträge passen.</p></div>
  {matcher('abgleich-v')}</div>
 </section>''' + cta('Was ist Ihre Immobilie wert?', 'Wir kommen vorbei und schätzen sie ein – kostenlos und unverbindlich.', 'bewertung')
     page({'file': 'verkaufen.html', 'title': 'Immobilie verkaufen in Stolberg & Aachen | Ritter Immobilien', 'desc': 'Haus oder Wohnung verkaufen mit Ritter Immobilien: Bewertung vor Ort, vorgemerkte Käufer, keine Sammelbesichtigungen, Begleitung bis zum Notar.', 'js': ['tools.js']}, body)
@@ -502,7 +496,7 @@ def bewertung():
     body = schild('Immobilie bewerten', 'Eine genaue Wertermittlung ist die erste Voraussetzung für einen erfolgreichen Verkauf. Wir schätzen Ihre Immobilie vor Ort ein – kostenlos und unverbindlich.', 'weisses-haus', 'Freistehendes weißes Einfamilienhaus mit Garten', 'Für Eigentümer') + f'''
 <section class="tool" id="werkzeug">
  <div class="wrap">
-  <div class="tool-head"><p class="kicker">Selbst ausprobieren</p><h2>Welches Bewertungsverfahren passt?</h2><p class="lead">Der Verkehrswert wird je nach Immobilie mit einem von drei Verfahren ermittelt. Wählen Sie Ihre Immobilie.</p></div>
+  <div class="tool-head"><h2>Welches Bewertungsverfahren passt?</h2><p class="lead">Der Verkehrswert wird je nach Immobilie mit einem von drei Verfahren ermittelt. Wählen Sie Ihre Immobilie.</p></div>
   <div class="verf" data-verf>
    <div class="seg" role="group" data-verf-typ>
     <button type="button" data-v="sach" aria-pressed="true">Ein- oder Zweifamilienhaus</button><button type="button" data-v="vergleich">Eigentumswohnung</button><button type="button" data-v="ertrag">Mehrfamilienhaus / Anlageobjekt</button><button type="button" data-v="vergleich-g">Baugrundstück</button>
@@ -537,7 +531,7 @@ def vermieten():
 </section>
 <section class="tool" id="werkzeug">
  <div class="wrap">
-  <div class="tool-head"><p class="kicker">Selbst ausprobieren</p><h2>Kautions-Rechner</h2><p class="lead">Wie hoch darf die Mietkaution sein? Geben Sie die monatliche Nettokaltmiete ein.</p></div>
+  <div class="tool-head"><h2>Kautions-Rechner</h2><p class="lead">Wie hoch darf die Mietkaution sein? Geben Sie die monatliche Nettokaltmiete ein.</p></div>
   <div class="kaution" data-kaution>
    <label class="big-in">Nettokaltmiete pro Monat in €<input type="text" inputmode="numeric" value="850" data-k-miete></label>
    <dl class="k-out" aria-live="polite" data-k-out></dl>
@@ -548,10 +542,10 @@ def vermieten():
     page({'file': 'vermieten.html', 'title': 'Immobilie vermieten in Stolberg | Ritter Immobilien', 'desc': 'Wohnung oder Haus vermieten mit Ritter Immobilien: Mietpreis, Mieterauswahl, Mietvertrag, Übergabe. Mit Kautions-Rechner nach § 551 BGB.', 'js': ['tools.js']}, body)
 
 def finanzierung():
-    body = schild('Finanzierung', 'Eine seriöse, unabhängige Finanzierung ist uns wichtig. Unser unabhängiger Finanzierungsexperte vermittelt Ihnen eine maßgeschneiderte Finanzierung – kostenlos.', 'kueche', 'Moderne Küche in einem verkauften Haus', 'Für Käufer') + f'''
+    body = schild('Finanzierung', 'Eine seriöse, unabhängige Finanzierung ist uns wichtig. Unser unabhängiger Finanzierungsexperte vermittelt Ihnen eine maßgeschneiderte Finanzierung – kostenlos.', 'glas-kueche', 'Küche mit Holzfronten und Essplatz', 'Für Käufer') + f'''
 <section class="tool" id="werkzeug">
  <div class="wrap">
-  <div class="tool-head"><p class="kicker">Selbst ausprobieren</p><h2>Kaufnebenkosten in NRW</h2><p class="lead">Zum Kaufpreis kommen Grunderwerbsteuer, Notar und Grundbuch und gegebenenfalls die Maklerprovision. So viel Eigenkapital sollten Sie mindestens einplanen.</p></div>
+  <div class="tool-head"><h2>Kaufnebenkosten in NRW</h2><p class="lead">Zum Kaufpreis kommen Grunderwerbsteuer, Notar und Grundbuch und gegebenenfalls die Maklerprovision. So viel Eigenkapital sollten Sie mindestens einplanen.</p></div>
   <div class="nk" data-nk-page>
    <div class="nk-in">
     <label class="big-in">Kaufpreis in €<input type="text" inputmode="numeric" value="350.000" data-nk-preis></label>
@@ -565,7 +559,7 @@ def finanzierung():
 <section class="text-sec">
  <div class="wrap cols2">
   <div><h2>Unabhängig beraten</h2><p>Wir pflegen Kontakte zu den regionalen Bankhäusern und arbeiten mit einem unabhängigen Finanzierungsexperten zusammen, der die Angebote vieler Banken vergleicht. Für Sie ist die Vermittlung kostenlos.</p></div>
-  <div><h2>Ratgeber</h2><p><a href="ratgeber-kaufnebenkosten.html">Kaufnebenkosten in NRW: womit Sie rechnen müssen {arrow()}</a></p></div>
+  <div><h2>Ratgeber</h2><p><a href="ratgeber-kaufnebenkosten.html">Kaufnebenkosten in NRW: womit Sie rechnen müssen</a></p></div>
  </div>
 </section>''' + cta('Finanzierung anfragen', 'Wir stellen den Kontakt zu unserem Finanzierungsexperten her.', 'finanzierung')
     page({'file': 'finanzierung.html', 'title': 'Immobilienfinanzierung & Kaufnebenkosten NRW | Ritter', 'desc': 'Kostenlose, unabhängige Finanzierungsvermittlung über Ritter Immobilien – mit Rechner für Kaufnebenkosten in NRW (Grunderwerbsteuer 6,5 %).', 'js': ['tools.js']}, body)
@@ -578,7 +572,7 @@ def referenzen():
     order = sorted(groups.items(), key=lambda kv: -len(kv[1]))
     btns = '<button type="button" data-o="" aria-pressed="true">Alle <small>' + str(len(REFS)) + '</small></button>' + ''.join(f'<button type="button" data-o="{e(o)}" aria-pressed="false">{e(o)} <small>{len(v)}</small></button>' for o, v in order)
     items = ''.join(f'<li data-ort="{e(o)}"><span class="r-ort">{e(o)}</span>{e(t)}</li>' for o, v in order for t in v)
-    fotos = ['siedlungshaus', 'haus-garten', 'bungalow', 'neubau', 'hof-weiss', 'palmenweg']
+    fotos = ['siedlungshaus', 'haus-garten', 'bungalow', 'neubau', 'hof-weiss', 'garten-palmen']
     alts = ['Verkauftes Einfamilienhaus mit Garage', 'Verkauftes Haus mit Garten', 'Verkaufter Bungalow mit großem Garten', 'Verkaufter Neubau', 'Verkauftes weißes Haus mit Hof', 'Garten mit Palmen eines verkauften Hauses']
     strip = ''.join(f'<figure>{img(f, a, "", "(max-width: 700px) 50vw, 33vw")}</figure>' for f, a in zip(fotos, alts))
     body = schild('Referenzen', f'Ein Auszug aus unseren vermittelten Immobilien: {len(REFS)} Häuser und Wohnungen im ganzen Kreis Aachen. Weitere Referenzen nennen wir Ihnen gern auf Anfrage.', 'siedlungshaus', 'Verkauftes Einfamilienhaus mit Garage', 'Verkauft') + f'''
@@ -611,7 +605,7 @@ def hausverwaltung():
 </section>
 <section class="tool" id="werkzeug">
  <div class="wrap">
-  <div class="tool-head"><p class="kicker">Selbst ausprobieren</p><h2>Das Verwaltungsjahr</h2><p class="lead">Was steht in welchem Monat an? Wählen Sie einen Monat.</p></div>
+  <div class="tool-head"><h2>Das Verwaltungsjahr</h2><p class="lead">Was steht in welchem Monat an? Wählen Sie einen Monat.</p></div>
   <div class="season" data-hv>
    <div class="season-m" role="group" aria-label="Monat wählen">{''.join(f'<button type="button" data-m="{i}">{m}</button>' for i, m in enumerate(['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']))}</div>
    <div class="season-out" aria-live="polite"></div>
@@ -657,18 +651,18 @@ def ueber():
 
 RAT = [
  ('ratgeber-bewertung.html', 'Drei Verfahren der Immobilienbewertung', 'Sachwert, Vergleichswert, Ertragswert: welches Verfahren für welche Immobilie gilt – und warum Online-Rechner nicht reichen.', 'weisses-haus'),
- ('ratgeber-erbe.html', 'Verkaufen nach Erbe oder Scheidung', 'Wenn mehrere Beteiligte entscheiden müssen: Wert, Gutachten, Haushaltsauflösung und ein ruhiger Ablauf.', 'steinwand'),
- ('ratgeber-kaufnebenkosten.html', 'Kaufnebenkosten in NRW', 'Grunderwerbsteuer, Notar, Grundbuch und Provision: womit Käufer rechnen müssen – mit Beispielrechnung.', 'kueche'),
+ ('ratgeber-erbe.html', 'Verkaufen nach Erbe oder Scheidung', 'Wenn mehrere Beteiligte entscheiden müssen: Wert, Gutachten, Haushaltsauflösung und ein ruhiger Ablauf.', 'glas-wohnen'),
+ ('ratgeber-kaufnebenkosten.html', 'Kaufnebenkosten in NRW', 'Grunderwerbsteuer, Notar, Grundbuch und Provision: womit Käufer rechnen müssen – mit Beispielrechnung.', 'glas-kueche'),
 ]
 
 def ratgeber():
     items = ''.join(f'<li><a href="{f}">{img(ph, t, "rg-img", "(max-width: 900px) 100vw, 33vw")}<span class="rg-t">{e(t)}</span><span class="rg-d">{e(d)}</span></a></li>' for f, t, d, ph in RAT)
-    body = schild('Ratgeber', 'Kurz erklärt: was Eigentümer und Käufer rund um Bewertung, Verkauf und Kauf wissen sollten.', 'palmenweg', 'Gartenweg mit Palmen', 'Wissen') + f'<section class="rg"><div class="wrap"><ul class="rg-list">{items}</ul></div></section>' + cta()
+    body = schild('Ratgeber', 'Kurz erklärt: was Eigentümer und Käufer rund um Bewertung, Verkauf und Kauf wissen sollten.', 'garten-palmen', 'Gartenweg mit Palmen', 'Wissen') + f'<section class="rg"><div class="wrap"><ul class="rg-list">{items}</ul></div></section>' + cta()
     page({'file': 'ratgeber.html', 'title': 'Ratgeber Immobilien verkaufen & kaufen | Ritter Immobilien', 'desc': 'Ratgeber von Ritter Immobilien: Immobilienbewertung, Verkauf nach Erbe oder Scheidung, Kaufnebenkosten in NRW.'}, body)
 
 def artikel(i, content):
     f, t, d, ph = RAT[i]
-    others = ''.join(f'<li><a href="{x[0]}">{e(x[1])} {arrow()}</a></li>' for j, x in enumerate(RAT) if j != i)
+    others = ''.join(f'<li><a href="{x[0]}">{e(x[1])}</a></li>' for j, x in enumerate(RAT) if j != i)
     body = schild(t, d, ph, t, 'Ratgeber') + f'<article class="art"><div class="wrap art-grid"><div class="art-body">{content}</div><aside class="art-side"><h2>Weiterlesen</h2><ul>{others}</ul><a class="btn mag" href="kontakt.html?thema=bewertung">Kostenlose Bewertung</a></aside></div></article>' + cta()
     ld = [{"@context": "https://schema.org", "@type": "Article", "headline": t, "description": d, "datePublished": "2026-09-29", "author": {"@type": "Person", "name": "Rudolf Ritter"}, "publisher": {"@id": BASE + "#firma"}, "mainEntityOfPage": BASE + f}]
     page({'file': f, 'title': t + ' | Ritter Immobilien', 'desc': d[:155], 'group': 'ratgeber.html', 'ld': ld, 'js': ['tools.js'] if i == 2 else []}, body)
@@ -732,12 +726,12 @@ def kontakt():
     page({'file': 'kontakt.html', 'title': 'Kontakt | Ritter Immobilien, Pfarrer-Gau-Str. 51, Stolberg', 'desc': 'Ritter Immobilien e.K., Pfarrer-Gau-Str. 51, 52223 Stolberg. Telefon 02402 3477, Mobil 0171 7803453, info@ritterimmobilien.de.'}, body)
 
 def foehr():
-    body = schild('Ferienhaus auf Föhr', 'Urlaubsreif? Föhr ist immer eine Reise wert – die grüne Insel unter den nordfriesischen Eilanden.', 'palmenweg', 'Gartenweg', 'Urlaubsreif?') + f'''
+    body = schild('Ferienhaus auf Föhr', 'Urlaubsreif? Föhr ist immer eine Reise wert – die grüne Insel unter den nordfriesischen Eilanden.', 'garten-palmen', 'Gartenweg', 'Urlaubsreif?') + f'''
 <section class="text-sec"><div class="wrap cols2">
  <div><h2>Die Insel</h2><p>Das nach Norden liegende Marschland mit seinen jadeglänzenden Weideflächen gehört allein den Kühen und Seevögeln. 22 Kilometer Ringdeich mit Schafen als lebende Rasenmäher und 15 Kilometer weißer Sand. Das Haus liegt im historischen Ortskern des Dorfes Oldsum an einer alten Dorfstraße mit reetgedeckten Häusern; zum Oldsumer Naturstrand sind es etwa 1.500 Meter.</p>
   <h2>Das Ferienhaus</h2><p>Liebevoll restauriert, rund 100 m² Wohnfläche. Gemütliche gute Stube, kleine Video- und Bibliothek, zwei Schlafzimmer (eines mit Doppelbett und antikem Mobiliar, eines mit zwei Einzelbetten). Küche teils antik mit original Delfter Kacheln, dazu moderne Einbauküche mit Cerankochfeld, Backofen, Mikrowelle, Geschirrspüler, Waschmaschine und Kaffeemaschine.</p>
   <h2>Das Grundstück</h2><p>Eingezäunter Bauerngarten nach Südwesten mit Obstbäumen und windgeschützter Terrasse.</p>
-  <a class="btn mag" href="kontakt.html?thema=foehr">Anfrage zum Ferienhaus {arrow()}</a></div>
+  <a class="btn mag" href="kontakt.html?thema=foehr">Anfrage zum Ferienhaus</a></div>
  <div class="foehr-img"><figure>{img('foehr-1', 'Ferienhaus in Oldsum auf Föhr', '', '(max-width: 800px) 100vw, 45vw', False, 700, 432)}</figure><figure>{img('foehr-2', 'Ferienhaus auf Föhr', '', '(max-width: 800px) 60vw, 25vw', False, 500, 629)}</figure></div>
 </div></section>'''
     page({'file': 'ferienhaus-foehr.html', 'title': 'Ferienhaus auf Föhr in Oldsum | Ritter Immobilien', 'desc': 'Liebevoll restauriertes Ferienhaus mit rund 100 m² im historischen Ortskern von Oldsum auf Föhr, 1,5 km zum Naturstrand.'}, body)
@@ -747,9 +741,9 @@ def simple(file, title, desc, h1, content, noindex=False):
 
 def recht():
     simple('danke.html', 'Danke für Ihre Nachricht | Ritter Immobilien', 'Ihre Nachricht an Ritter Immobilien ist angekommen.', 'Danke! Wir melden uns.',
-           f'<p class="lead">Ihre Nachricht ist bei uns angekommen. Wir melden uns schnellstmöglich – oder rufen Sie direkt an: <a href="tel:{TEL_L}">{TEL}</a>.</p><div class="btns"><a class="btn mag" href="angebote.html">Aktuelle Angebote {arrow()}</a><a class="btn ghost mag" href="index.html">Zur Startseite</a></div>', True)
+           f'<p class="lead">Ihre Nachricht ist bei uns angekommen. Wir melden uns schnellstmöglich – oder rufen Sie direkt an: <a href="tel:{TEL_L}">{TEL}</a>.</p><div class="btns"><a class="btn mag" href="angebote.html">Aktuelle Angebote</a><a class="btn ghost mag" href="index.html">Zur Startseite</a></div>', True)
     simple('404.html', 'Seite nicht gefunden | Ritter Immobilien', 'Diese Seite gibt es nicht. Zu den aktuellen Angeboten von Ritter Immobilien.', 'Diese Tür führt ins Leere.',
-           f'<p class="lead">Die Seite gibt es nicht (mehr). Vielleicht war es ein Angebot, das inzwischen verkauft ist?</p><div class="btns"><a class="btn mag" href="angebote.html">Aktuelle Angebote {arrow()}</a><a class="btn ghost mag" href="index.html">Zur Startseite</a></div>', True)
+           f'<p class="lead">Die Seite gibt es nicht (mehr). Vielleicht war es ein Angebot, das inzwischen verkauft ist?</p><div class="btns"><a class="btn mag" href="angebote.html">Aktuelle Angebote</a><a class="btn ghost mag" href="index.html">Zur Startseite</a></div>', True)
     simple('impressum.html', 'Impressum | Ritter Immobilien e.K.', 'Impressum der Ritter Immobilien e.K., Pfarrer-Gau-Str. 51, 52223 Stolberg. Inhaber Rudolf Ritter, HRA 9345 Amtsgericht Aachen.', 'Impressum', f'''
 <h2>Angaben gemäß § 5 DDG</h2><p>{FIRMA}<br>{STR}<br>{PLZ} {ORT}</p>
 <p><b>Inhaber und Vertretungsberechtigter:</b> Rudolf Ritter</p>

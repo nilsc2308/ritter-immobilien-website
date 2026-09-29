@@ -24,7 +24,7 @@
         const out = { n: $('[data-m-n]', m), label: $('[data-m-label]', m), list: $('[data-m-list]', m), cta: $('[data-m-cta]', m) };
         const reno = $('[data-m-reno]', m);
         const run = () => {
-          const typ = val($('[data-m="typ"]', m)), ort = val($('[data-m="ort"]', m)), preis = +val($('[data-m="preis"]', m));
+          const sv = k => $(`[data-m="${k}"]`, m), typ = sv('typ').value, ort = sv('ort').value, preis = +sv('preis').value;
           // Preisband: „bis 350.000 €“ heißt 150.000–350.000 €; ein Suchauftrag passt, wenn sein Budget über der Untergrenze liegt
           const unten = { 150000: 0, 350000: 150000, 600000: 350000, 999999999: 600000 }[preis] || 0;
           const passt = d.auftraege.filter(a => {
@@ -38,12 +38,17 @@
           out.label.textContent = passt.length === 1 ? 'vorgemerkter Suchauftrag passt' : 'vorgemerkte Suchaufträge passen';
           out.list.innerHTML = passt.length ? passt.map(a => `<li><span class="k-wer">${esc(a.wer)}</span>${esc(a.text)}</li>`).join('')
             : '<li class="leer">Aus unserer veröffentlichten Liste passt gerade nichts genau – viele Suchaufträge erreichen uns aber nur telefonisch. Rufen Sie uns an: 02402 3477.</li>';
-          const typT = $('[data-m="typ"] [aria-pressed="true"]', m).textContent, ortT = $('[data-m="ort"] [aria-pressed="true"]', m).textContent, prT = $('[data-m="preis"] [aria-pressed="true"]', m).textContent;
-          out.cta.href = 'kontakt.html?thema=verkauf&details=' + encodeURIComponent(`Ich möchte verkaufen: ${typT} in ${ortT}, Preisvorstellung ${prT}${reno.checked ? ', renovierungsbedürftig' : ''}. Passende Suchaufträge laut Website: ${passt.length}.`);
+          const txt = k => sv(k).selectedOptions[0].textContent, typT = txt('typ'), ortT = txt('ort'), prT = txt('preis');
+          out.cta.href = 'kontakt.html?thema=verkauf&details=' + encodeURIComponent(`Ich möchte ${typT} in ${ortT} verkaufen, Preisvorstellung ${prT}${reno.checked ? ', renovierungsbedürftig' : ''}. Passende Suchaufträge laut Website: ${passt.length}.`);
           pop($$('li', out.list));
-          if (motion) gsap.fromTo(out.n, { scale: 1.25 }, { scale: 1, duration: .45, ease: 'back.out(3)' });
+          
         };
-        $$('[data-m]', m).forEach(g => seg(g, run));
+        // Auswahlfelder im Satz so breit wie das gewählte Wort
+        const cv = document.createElement('canvas').getContext('2d');
+        const fit = sel => { const cs = getComputedStyle(sel); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; cv.letterSpacing = cs.letterSpacing; sel.style.width = (cv.measureText(sel.selectedOptions[0].textContent).width + parseFloat(cs.fontSize) * 1.25) + 'px'; };
+        $$('[data-m]', m).forEach(g => { fit(g); g.addEventListener('change', () => { fit(g); run(); }); });
+        addEventListener('resize', () => $$('[data-m]', m).forEach(fit));
+        document.fonts && document.fonts.ready.then(() => $$('[data-m]', m).forEach(fit));
         reno.addEventListener('change', run);
         run();
       });

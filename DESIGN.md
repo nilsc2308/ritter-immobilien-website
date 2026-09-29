@@ -35,3 +35,13 @@ Design-Read: Redesign einer Jimdo-Seite (Copyright 2017, Cookie-Wand, Aachener D
 | Hausverwaltung + Referenzen | hausverwaltung.html |
 | Urlaubsreif? (Ferienhaus auf Föhr) | ferienhaus-foehr.html (im Fuß verlinkt) |
 | Kontakt, Impressum, Datenschutz, AGB, Widerrufsbelehrung | kontakt.html, impressum.html, datenschutz.html, agb.html, widerruf.html |
+
+---
+
+## 2. Fassung (29.9.2026 mittags) – nach Nils' Rückmeldung
+
+Nils: „sieht noch zu sehr nach KI aus, das Scroll-Through soll eher wie ein Video sein, und die Bilder sind unscharf.“
+
+- **Schärfe:** Alle Fotos neu aus den Jimdo-**Originalen** (bis 6000 px) statt der 1600-px-Vorschauen, als WebP in 800/1600/2400 px mit echten Breitenangaben im srcset. Das Außenfoto des Glasgiebel-Hauses gab es nur in 1024 px → Flug auf das **Bruchsteinhaus** umgestellt (durchgehend scharfe Serie): Hofweg → Diele mit Holztreppe → Wohnzimmer mit Bruchsteinwand und Kronleuchter → Garten mit Palmen → „Wie dürfen wir helfen?“. Kamera-Zoom höchstens 1,3-fach im Bild, stärkerer Zoom nur in der unscharfen Überblendung.
+- **Wie ein Video:** durchgehende Kamerafahrt ohne Stillstand (Tempo gleichmäßig, scrub 1,2), leichte Handkamera-Bewegung, Zoom-Überblendungen mit Unschärfe statt sichtbarer Ausschnitt-Rechtecke, Texte nur als Untertitel, Titel nur am Anfang, Film-Korn und Vignette, dünne Zeitleiste wie bei einem Video.
+- **Weniger KI:** Schrift **Schibsted Grotesk** statt Fraunces/Instrument Sans; redaktioneller Stil wie ein Architekturmagazin: Papierweiß, Tinte, Haarlinien statt Karten mit weichen Schatten, eckige Knöpfe, keine Überschriften-Etiketten, keine Pillen; Suchauftrags-Abgleich als Satz mit Auswahlfeldern („Ich möchte ein Einfamilienhaus in Stolberg verkaufen …“); Seitenkopf: großer Titel + Lead, darunter Foto über die volle Breite; Ritter-Blau nur als Akzent.
