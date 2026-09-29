@@ -7,7 +7,7 @@ Unbeauftragter Entwurf. Bisherige Seite: www.ritterimmobilien.de (Jimdo, Copyrig
 - [ ] **Einverständnis** von Rudolf Ritter für die neue Website.
 - [ ] **Domain:** Die Angebote laden nur live, wenn die Seite unter **ritterimmobilien.de** läuft (das immowelt-Homepagemodul ist an diese Domain gebunden). Vor dem Umzug im immowelt-Kundenbereich prüfen, ob `www.` und ohne `www.` freigeschaltet sind. Bis dahin zeigt die Vorschau den Stand vom 29.9.2026 (9 Angebote).
 - [ ] **Nutzung des Homepagemoduls** im eigenen Design mit immowelt abstimmen (die Seite ruft dieselben Schnittstellen auf wie das Original-Modul, stellt sie aber selbst dar). Fallback: das Original-Modul-Skript einbinden.
-- [ ] **Fotorechte:** eigene Objektfotos von der alten Seite; Freigabe bestätigen. Der Flug zeigt das verkaufte Bruchsteinhaus (Originalfotos bis 6000 px). Schön wäre eine echte Drohnenaufnahme eines Objekts für den Einstieg.
+- [ ] **Fotorechte:** eigene Objektfotos von der alten Seite; Freigabe bestätigen. Der Flug zeigt das verkaufte Bruchsteinhaus (Originalfotos bis 6000 px). Schön wäre ein echtes Drohnen-/Rundgangvideo eines Objekts – es ersetzt einfach `video/flug-quer.mp4` und `video/flug-hoch.mp4`.
 - [ ] **Kundenstimmen** mit Namen stammen von der alten Seite – Veröffentlichung weiterhin in Ordnung?
 - [ ] **Suchaufträge** (Stand 12.09.2025) aktualisieren; sie stehen in `_build.py` (Liste `SUCH`).
 - [ ] **Vermietung:** Die alte Unterseite „Immobilienvermietung“ war leer; Texte aus Hausverwaltung und Kundenstimmen abgeleitet – Leistungsumfang bestätigen.
@@ -27,13 +27,13 @@ Unbeauftragter Entwurf. Bisherige Seite: www.ritterimmobilien.de (Jimdo, Copyrig
 | Cookie-Banner | nicht nötig. |
 | Mobile | Playwright 390 × 844, Chromium + WebKit, alle 25 Seiten durchgescrollt: kein seitliches Scrollen (nach Korrektur der Eingabefelder). Flug läuft am Handy wie am Desktop. |
 | JS-Fehler | 0 (Chromium, WebKit; 1400 px und 390 px). |
-| Flug-Szene | 35 Schritte Desktop, 21 Handy fotografiert: durchgehende Kamerafahrt, Untertitel strikt nacheinander, keine Überlagerung. |
+| Einstiegsvideo | läuft in WebKit (Desktop 1920 × 1080, Handy 1080 × 1920), Pause-Knopf getestet, Autostart aus bei reduzierter Bewegung; Video 6,6 / 5,5 MB, lädt erst nach dem Seitenaufbau nach. |
 | Meta | alle Titel ≤ 65, Descriptions ≤ 155 Zeichen. |
 | Favicon / OG | `favicon.svg`, `apple-touch-icon.png`, `og.jpg` 1200 × 630. |
 | Sitemap / Robots / Canonical | vorhanden; Canonical auf https://www.ritterimmobilien.de/. |
 | 404 | `404.html`; Exposé eines verkauften Objekts zeigt „verkauft oder reserviert“ + Angebote. |
 | Links | 42 interne Links: 0 kaputt. |
-| Performance | bis „load“: Desktop 641 KB, Handy 440 KB (Fotos jetzt bis 2400 px für Retina; Angebote laden nach dem Seitenaufbau). |
+| Performance | bis „load“: Desktop 554 KB, Handy 456 KB (Video, Kapitelfotos und Angebote laden danach). |
 | Formular | Netlify-Forms + Honeypot; Pflichtfelder (3 markiert), `?thema=` und `?objekt=` vorbelegt; Vorschau leitet auf danke.html. |
 | Weiterleitungen | alte Jimdo-Adressen → neue Seiten in `netlify.toml`. |
 | Lokale SEO | JSON-LD `RealEstateAgent` auf allen Seiten, `FAQPage`, `Article`, `Offer` im Exposé. |

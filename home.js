@@ -4,45 +4,28 @@
   const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const motion = X_.motion;
 
-  // ---------- Flug durch das Haus ----------
-  const flug = $('.flug');
-  const lazy = () => $$('.flug img[data-src]').forEach(im => { im.src = im.dataset.src; if (im.dataset.srcset) im.srcset = im.dataset.srcset; delete im.dataset.src; });
-  if (document.readyState === 'complete') lazy(); else addEventListener('load', lazy);
-  if (flug && !motion) lazy();
-  if (flug && motion) {
-    const stage = $('.flug-stage', flug), shots = $$('.fl', flug), blurs = $$('.fl-b', flug), subs = $$('.sub', flug);
-    const end = $('.fl-end', flug), title = $('.fl-title', flug), bar = $('.fl-time i', flug);
-    const img = el => $('img', el);
-    const N = shots.length, SEG = 3, X = .9;              // Länge je Raum, Dauer der Überblendung
-    const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: flug, start: 'top top', end: 'bottom bottom', scrub: 1.2 } });
-    shots.forEach((sh, i) => {
-      const S = i * SEG, E = S + SEG;
-      // durchgehende Vorwärtsfahrt mit leichter Drehung – nie ein Stillstand
-      tl.fromTo(img(sh), { scale: 1, rotation: i % 2 ? .5 : -.5 }, { scale: 1.3, rotation: i % 2 ? -.4 : .4, duration: SEG - X }, i ? S - .1 : 0);
-      // Übergang: weiter hineinfliegen, unscharf werden, nächster Raum blendet auf
-      const next = shots[i + 1] || end;
-      tl.to(img(sh), { scale: 2, duration: X + .1, ease: 'power1.in' }, E - X)
-        .fromTo(img(blurs[i]), { scale: 1.3 }, { scale: 2, duration: X + .1, ease: 'power1.in' }, E - X)
-        .fromTo(blurs[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: X * .55, ease: 'power1.in' }, E - X)
-        .fromTo(next, { autoAlpha: 0 }, { autoAlpha: 1, duration: X * .6, ease: 'power1.out' }, E - X * .55)
-        .set([sh, blurs[i]], { autoAlpha: 0 }, E + .1);
-      // Untertitel nacheinander, nie gleichzeitig
-      const tin = i ? S + .45 : 1.35, tout = E - X - .35;
-      tl.fromTo(subs[i], { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .35, ease: 'power2.out' }, tin)
-        .to(subs[i], { autoAlpha: 0, y: -8, duration: .3, ease: 'power2.in' }, tout);
-    });
-    tl.to(title, { autoAlpha: 0, y: -20, duration: .5, ease: 'power2.in' }, .6);
-    const T = N * SEG;
-    tl.from($$('.fl-end-in > *', end), { opacity: 0, y: 26, duration: .5, stagger: .08, ease: 'power3.out' }, T - .2)
-      .to({}, { duration: 1.4 }, T + .4);
-    tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: T, ease: 'none' }, 0);
-    // leichte Handkamera-Bewegung
-    tl.eventCallback('onUpdate', () => { const t = tl.time(); stage.style.setProperty('--dx', (Math.sin(t * 1.9) * 5).toFixed(2) + 'px'); stage.style.setProperty('--dy', (Math.cos(t * 1.4) * 4).toFixed(2) + 'px'); });
-    gsap.from(title, { opacity: 0, y: 24, duration: 1.1, ease: 'power3.out', delay: (X_.introDelay ? X_.introDelay() : 0) + .1 });
-    addEventListener('resize', () => ScrollTrigger.refresh());
+  // ---------- Einstiegsvideo: Hochformat am Handy, Pause-Knopf, reduzierte Bewegung respektieren ----------
+  const v = $('.hero-video');
+  if (v) {
+    const hoch = matchMedia('(max-aspect-ratio: 4/5)').matches;
+    if (hoch) v.src = v.dataset.hoch;
+    v.addEventListener('playing', () => v.classList.add('on'), { once: true });
+    const btn = $('.hero-pause');
+    const setBtn = paused => { btn.setAttribute('aria-pressed', paused ? 'true' : 'false'); btn.setAttribute('aria-label', paused ? 'Video abspielen' : 'Video anhalten'); btn.classList.toggle('paused', paused); };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) setBtn(true);
+    else { v.preload = 'auto'; v.play().then(() => setBtn(false)).catch(() => setBtn(true)); }
+    btn.addEventListener('click', () => { if (v.paused) { v.play(); setBtn(false); } else { v.pause(); setBtn(true); } });
+    // außerhalb des Bildschirms anhalten (spart Akku)
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(en => { if (btn.classList.contains('paused')) return; en.isIntersecting ? v.play().catch(() => {}) : v.pause(); })).observe(v);
+    if (motion) {
+      gsap.from(['.hero h1', '.hero .path'], { opacity: 0, y: 26, duration: 1, stagger: .1, ease: 'power3.out', delay: (X_.introDelay ? X_.introDelay() : 0) + .2 });
+      gsap.to('.hero-in', { yPercent: -12, opacity: .2, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .5 } });
+    }
   }
 
   // ---------- So verkaufen wir: Kapitel rechts, Foto links wechselt passend ----------
+  addEventListener('load', () => $$('.sv-img img[data-src]').forEach(im => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; }));
   const imgs = $$('.sv-img'), kap = $$('.sv-k');
   const setK = i => { imgs.forEach((f, k) => f.classList.toggle('on', k === i)); kap.forEach((a, k) => a.classList.toggle('on', k === i)); };
   if (kap.length) {

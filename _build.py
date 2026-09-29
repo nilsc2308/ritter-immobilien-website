@@ -292,14 +292,6 @@ def ortsteile():
     rest = sum(n for o, n in top if n < 2)
     return rows, len(REFS), rest
 
-FLUG = [
- # Bild, Alt, Zielpunkt der Kamera (x %, y %), Untertitel
- ('flug-aussen', 'Stolberger Bruchsteinhaus mit Hofweg und Garten – von Ritter Immobilien verkauft', (46, 42), 'Ein Bruchsteinhaus in Stolberg. Von uns verkauft.'),
- ('flug-diele', 'Diele mit Holztreppe, Wandleuchtern und Natursteinboden', (45, 40), 'Wir zeigen jedes Haus so, wie Käufer es erleben.'),
- ('flug-wohnen', 'Wohnzimmer mit Bruchsteinwand, Kamin, Kronleuchter und Ledersofas', (80, 36), 'Jede Besichtigung persönlich begleitet.'),
- ('flug-garten', 'Garten mit Palmen, Trittplatten und Rasen', (52, 50), 'Bis zur Übergabe der Schlüssel – und danach.'),
-]
-
 GR = json.load(open(os.path.join(ROOT, '_quelle', 'bildgroessen.json')))
 def srcset(name):
     out = []
@@ -310,38 +302,28 @@ def srcset(name):
     return ', '.join(out)
 
 def flug():
-    slides, blurs, subs = [], [], []
-    for i, (n, alt, (fx, fy), sub) in enumerate(FLUG):
-        ss = srcset(n)
-        src = (f'src="img/{n}-1600.webp" srcset="{ss}" fetchpriority="high"' if i == 0 else f'data-src="img/{n}-1600.webp" data-srcset="{ss}"')
-        slides.append(f'<div class="fl fl{i}" style="--fx:{fx}%;--fy:{fy}%"><img {src} sizes="100vw" width="2400" height="1600" alt="{e(alt)}"></div>')
-        blurs.append(f'<div class="fl-b fl-b{i}" aria-hidden="true" style="--fx:{fx}%;--fy:{fy}%"><img data-src="img/{n}-blur.webp" alt="" width="640" height="427"></div>')
-        subs.append(f'<p class="sub sub{i}">{e(sub)}</p>')
-    return f'''<section class="flug" id="flug" aria-label="Kamerafahrt durch ein von Ritter Immobilien verkauftes Bruchsteinhaus in Stolberg">
- <div class="flug-stage">
-  {''.join(slides)}{''.join(blurs)}
-  <div class="fl-grade" aria-hidden="true"></div>
-  <div class="fl-title">
-   <h1>Ritter Immobilien<br><span>Stolberg, seit 1989</span></h1>
-  </div>
-  <div class="subs" aria-live="off">{''.join(subs)}</div>
-  <div class="fl-time" aria-hidden="true"><i></i></div>
-  <div class="fl-end">
-   <div class="wrap fl-end-in">
-    <h2>Wie dürfen wir helfen?</h2>
-    <div class="paths">
-     <a class="path" href="angebote.html"><span class="p-k">Ich suche ein Zuhause</span><span class="p-t"><b data-live-count>9</b> aktuelle Angebote</span></a>
-     <a class="path" href="kaeufer-warten.html"><span class="p-k">Ich möchte verkaufen</span><span class="p-t"><b>{len(SUCH)}</b> Suchaufträge warten</span></a>
-    </div>
-    <p class="fl-end-tel">Oder anrufen: <a href="tel:{TEL_L}">{TEL}</a></p>
-   </div>
+    return f'''<section class="hero" aria-labelledby="hero-h">
+ <picture class="hero-poster"><source media="(max-aspect-ratio: 4/5)" srcset="video/flug-hoch-poster.webp"><img src="video/flug-quer-poster.webp" alt="" width="1920" height="1080" fetchpriority="high"></picture>
+ <video class="hero-video" muted loop playsinline preload="metadata"
+  data-quer="video/flug-quer.mp4" data-hoch="video/flug-hoch.mp4"
+  aria-label="Kamerafahrt durch ein von Ritter Immobilien verkauftes Bruchsteinhaus in Stolberg: Hofweg, Diele, Wohnzimmer, Garten">
+  <source src="video/flug-quer.mp4" type="video/mp4">
+ </video>
+ <div class="hero-scrim" aria-hidden="true"></div>
+ <div class="wrap hero-in">
+  <h1 id="hero-h">Ritter Immobilien<span>Stolberg, seit 1989. Verkauf, Vermietung, Hausverwaltung.</span></h1>
+  <div class="paths">
+   <a class="path" href="angebote.html"><span class="p-k">Ich suche ein Zuhause</span><span class="p-t"><b data-live-count>9</b> aktuelle Angebote</span></a>
+   <a class="path" href="kaeufer-warten.html"><span class="p-k">Ich möchte verkaufen</span><span class="p-t"><b>{len(SUCH)}</b> Suchaufträge warten</span></a>
   </div>
  </div>
+ <button class="hero-pause" type="button" aria-pressed="false" aria-label="Video anhalten"><span aria-hidden="true"></span></button>
+ <p class="hero-note">Video: ein von uns verkauftes Bruchsteinhaus in Stolberg</p>
 </section>'''
 
 def home():
     rows, total, rest = ortsteile()
-    kap_img = ''.join(f'<figure class="sv-img{" on" if i == 0 else ""}" data-i="{i}">{img(ph, alt, "", "(max-width: 900px) 100vw, 45vw")}</figure>' for i, (ph, alt, t, d) in enumerate(KAPITEL))
+    kap_img = ''.join(f'<figure class="sv-img{" on" if i == 0 else ""}" data-i="{i}">' + (img(ph, alt, '', '(max-width: 900px) 100vw, 45vw') if i == 0 else img(ph, alt, '', '(max-width: 900px) 100vw, 45vw').replace(' src=', ' data-src=').replace(' srcset=', ' data-srcset=')) + '</figure>' for i, (ph, alt, t, d) in enumerate(KAPITEL))
     kap_txt = ''.join(f'<article class="sv-k" data-i="{i}"><h3>{e(t)}</h3><p>{e(d)}</p></article>' for i, (ph, alt, t, d) in enumerate(KAPITEL))
     body = flug() + f'''
 <section class="offers" id="angebote" aria-labelledby="off-h">
@@ -402,7 +384,7 @@ def home():
 </section>'''
     page({'file': 'index.html', 'title': 'Ritter Immobilien – Immobilienmakler in Stolberg seit 1989', 'desc': 'Familiengeführter Immobilienmakler in Stolberg: Verkauf, Vermietung, Bewertung und Hausverwaltung in Stolberg, Eschweiler, Aachen und der Eifel.',
           'over': True, 'body': 'home', 'js': ['tools.js', 'home.js'],
-          'preload': '<link rel="preload" as="image" href="img/flug-aussen-1600.webp" imagesrcset="' + srcset('flug-aussen') + '" imagesizes="100vw" fetchpriority="high">'}, body)
+          'preload': ''}, body)
 
 # ---------------------------------------------------------------- Angebote + Exposé
 def angebote():

@@ -41,7 +41,7 @@
   let lastY = scrollY;
   const onScroll = () => {
     const y = scrollY;
-    const overZone = overStart && hero && y < hero.offsetHeight - innerHeight * 1.7;
+    const overZone = overStart && hero && y < hero.offsetHeight - 90;
     if (overStart) head.classList.toggle('over', !!overZone && !document.body.classList.contains('menu-open'));
     if (!document.body.classList.contains('menu-open') && !dds.some(li => li.classList.contains('open'))) {
       if (!overZone && y > 300 && y > lastY + 6 && y - lastY < 400) head.classList.add('hide');
@@ -55,7 +55,7 @@
   addEventListener('scroll', onScroll, { passive: true });
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(es => { es.forEach(en => en.isIntersecting ? blockers.add(en.target) : blockers.delete(en.target)); onScroll(); });
-    $$('.form, .cta-end, .obj-side, .filters, .matcher, .flug').forEach(el => io.observe(el));
+    $$('.form, .cta-end, .obj-side, .filters, .matcher, .hero').forEach(el => io.observe(el));
   }
   onScroll();
 
