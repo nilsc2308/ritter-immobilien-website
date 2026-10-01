@@ -51,3 +51,9 @@ Nils: „sieht noch zu sehr nach KI aus, das Scroll-Through soll eher wie ein Vi
 ## 3. Fassung (29.9.2026 mittags) – Video statt Scroll-Through
 
 Nils: „das Scroll-Through gefällt mir immer noch nicht, mach's lieber als Video.“ Der Einstieg ist jetzt ein **echtes Video** (MP4, H.264, 20,8 s, nahtlose Schleife, stumm, startet von selbst): Kamerafahrt durch das verkaufte Bruchsteinhaus – Hofweg → Diele → Wohnzimmer (Schwenk Bruchsteinwand → Fenster) → Garten → zurück zum Anfang. Aus den Originalfotos Bild für Bild gerendert (`scripts/video.js`, sharp + ffmpeg), weiche Überblendungen mit Bewegungsunschärfe. Zwei Fassungen: quer 1920 × 1080 (6,6 MB) und hoch 1080 × 1920 fürs Handy (5,5 MB), Vorschaubild je Format, Pause-Knopf, bei „reduzierter Bewegung“ kein Autostart. Darüber Titel und die zwei Wege. Kein gepinntes Scrollen mehr auf der Seite.
+
+---
+
+## 4. Fassung (1.10.2026) – ruhiger Einstieg
+
+Nils: Das Video aus Fotos („Diashow“) war ihm „fatal“. Einstieg jetzt **ohne Bewegung**: großes, scharfes Foto des verkauften Bruchsteinhauses (Original 4906 px, bis 3200 px ausgeliefert, eigener Hochformat-Ausschnitt fürs Handy), darüber Titel und die zwei Wege. Video-Dateien entfernt (Skript `scripts/video.js` bleibt für ein späteres echtes Drohnenvideo).

@@ -15,7 +15,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 
-<link rel="stylesheet" href="styles.css?v=202609291248">
+<link rel="stylesheet" href="styles.css?v=202610011320">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "RealEstateAgent", "@id": "https://www.ritterimmobilien.de/#firma", "name": "Ritter Immobilien e.K.", "url": "https://www.ritterimmobilien.de/", "telephone": "+49 2402 3477", "faxNumber": "+49 2402 9020970", "email": "info@ritterimmobilien.de", "image": "https://www.ritterimmobilien.de/img/flug-aussen-1600.webp", "logo": "https://www.ritterimmobilien.de/apple-touch-icon.png", "foundingDate": "1989", "founder": {"@type": "Person", "name": "Rudolf Ritter"}, "address": {"@type": "PostalAddress", "streetAddress": "Pfarrer-Gau-Str. 51", "postalCode": "52223", "addressLocality": "Stolberg", "addressRegion": "NRW", "addressCountry": "DE"}, "areaServed": ["Stolberg", "Eschweiler", "Aachen", "Würselen", "Roetgen", "Simmerath", "Jülich", "Düren"]}</script>
 </head>
 <body class="home" data-page="index">
@@ -59,12 +59,10 @@
 </div>
 <main id="main">
 <section class="hero" aria-labelledby="hero-h">
- <picture class="hero-poster"><source media="(max-aspect-ratio: 4/5)" srcset="video/flug-hoch-poster.webp"><img src="video/flug-quer-poster.webp" alt="" width="1920" height="1080" fetchpriority="high"></picture>
- <video class="hero-video" muted loop playsinline preload="metadata"
-  data-quer="video/flug-quer.mp4" data-hoch="video/flug-hoch.mp4"
-  aria-label="Kamerafahrt durch ein von Ritter Immobilien verkauftes Bruchsteinhaus in Stolberg: Hofweg, Diele, Wohnzimmer, Garten">
-  <source src="video/flug-quer.mp4" type="video/mp4">
- </video>
+ <picture class="hero-poster">
+  <source media="(max-aspect-ratio: 4/5)" srcset="img/hero-haus-hoch.webp">
+  <img src="img/hero-haus-1600.webp" srcset="img/hero-haus-800.webp 800w, img/hero-haus-1600.webp 1600w, img/hero-haus-2400.webp 2400w, img/hero-haus-3200.webp 3200w" sizes="100vw" width="3200" height="2133" alt="Stolberger Bruchsteinhaus mit Hofweg und Garten – von Ritter Immobilien verkauft" fetchpriority="high">
+ </picture>
  <div class="hero-scrim" aria-hidden="true"></div>
  <div class="wrap hero-in">
   <h1 id="hero-h">Ritter Immobilien<span>Stolberg, seit 1989. Verkauf, Vermietung, Hausverwaltung.</span></h1>
@@ -73,8 +71,7 @@
    <a class="path" href="kaeufer-warten.html"><span class="p-k">Ich möchte verkaufen</span><span class="p-t"><b>10</b> Suchaufträge warten</span></a>
   </div>
  </div>
- <button class="hero-pause" type="button" aria-pressed="false" aria-label="Video anhalten"><span aria-hidden="true"></span></button>
- <p class="hero-note">Video: ein von uns verkauftes Bruchsteinhaus in Stolberg</p>
+ <p class="hero-note">Ein von uns verkauftes Bruchsteinhaus in Stolberg</p>
 </section>
 <section class="offers" id="angebote" aria-labelledby="off-h">
  <div class="wrap">
@@ -179,9 +176,9 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js" defer></script>
-<script src="angebote.js?v=202609291248" defer></script>
-<script src="main.js?v=202609291248" defer></script>
-<script src="tools.js?v=202609291248" defer></script>
-<script src="home.js?v=202609291248" defer></script>
+<script src="angebote.js?v=202610011320" defer></script>
+<script src="main.js?v=202610011320" defer></script>
+<script src="tools.js?v=202610011320" defer></script>
+<script src="home.js?v=202610011320" defer></script>
 </body>
 </html>

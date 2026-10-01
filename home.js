@@ -4,25 +4,8 @@
   const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const motion = X_.motion;
 
-  // ---------- Einstiegsvideo: Hochformat am Handy, Pause-Knopf, reduzierte Bewegung respektieren ----------
-  const v = $('.hero-video');
-  if (v) {
-    const hoch = matchMedia('(max-aspect-ratio: 4/5)').matches;
-    if (hoch) v.src = v.dataset.hoch;
-    v.addEventListener('playing', () => v.classList.add('on'), { once: true });
-    const btn = $('.hero-pause');
-    const setBtn = paused => { btn.setAttribute('aria-pressed', paused ? 'true' : 'false'); btn.setAttribute('aria-label', paused ? 'Video abspielen' : 'Video anhalten'); btn.classList.toggle('paused', paused); };
-    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (still) setBtn(true);
-    else { v.preload = 'auto'; v.play().then(() => setBtn(false)).catch(() => setBtn(true)); }
-    btn.addEventListener('click', () => { if (v.paused) { v.play(); setBtn(false); } else { v.pause(); setBtn(true); } });
-    // außerhalb des Bildschirms anhalten (spart Akku)
-    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(en => { if (btn.classList.contains('paused')) return; en.isIntersecting ? v.play().catch(() => {}) : v.pause(); })).observe(v);
-    if (motion) {
-      gsap.from(['.hero h1', '.hero .path'], { opacity: 0, y: 26, duration: 1, stagger: .1, ease: 'power3.out', delay: (X_.introDelay ? X_.introDelay() : 0) + .2 });
-      gsap.to('.hero-in', { yPercent: -12, opacity: .2, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .5 } });
-    }
-  }
+  // ---------- Einstieg: ruhiges Foto, nur sanftes Einblenden des Textes ----------
+  if (motion && $('.hero')) gsap.from(['.hero h1', '.hero .path'], { opacity: 0, y: 20, duration: .9, stagger: .08, ease: 'power3.out', delay: (X_.introDelay ? X_.introDelay() : 0) + .15 });
 
   // ---------- So verkaufen wir: Kapitel rechts, Foto links wechselt passend ----------
   addEventListener('load', () => $$('.sv-img img[data-src]').forEach(im => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; }));

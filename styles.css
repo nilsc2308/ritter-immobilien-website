@@ -126,9 +126,8 @@ section { position: relative; }
 
 /* ---------- Einstieg mit Video ---------- */
 .hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; background: #0d0f12; color: #fff; display: flex; align-items: flex-end; }
-.hero-poster, .hero-poster img, .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero-video { opacity: 0; transition: opacity .6s; }
-.hero-video.on { opacity: 1; }
+.hero-poster, .hero-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-poster img { object-position: 45% 50%; }
 .hero-scrim { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.18) 42%, rgba(0,0,0,0) 62%), linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 16%); }
 .hero-in { position: relative; z-index: 2; padding-bottom: clamp(40px, 7vh, 80px); }
 .hero h1 { font-size: clamp(48px, 8vw, 132px); margin: 0 0 clamp(24px, 4vh, 44px); text-shadow: 0 2px 40px rgba(0,0,0,.2); }
@@ -138,10 +137,6 @@ section { position: relative; }
 .hero .path + .path { border-left-color: rgba(255,255,255,.25); }
 .hero .path:hover { color: #fff; background: rgba(255,255,255,.06); }
 .hero .p-t, .hero .p-t b { color: rgba(255,255,255,.85); }
-.hero-pause { position: absolute; z-index: 3; right: var(--pad); top: calc(var(--head) + 18px); width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.55); background: rgba(0,0,0,.15); cursor: pointer; display: grid; place-items: center; }
-.hero-pause span { width: 12px; height: 14px; border-left: 3px solid #fff; border-right: 3px solid #fff; }
-.hero-pause.paused span { width: 0; height: 0; border: 0; border-left: 12px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
-.hero-pause:hover { background: rgba(0,0,0,.35); }
 .hero-note { position: absolute; z-index: 3; right: var(--pad); bottom: 14px; margin: 0; font-size: 12px; color: rgba(255,255,255,.6); }
 .paths { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); max-width: 1100px; }
 .path { display: grid; gap: 6px; padding: 24px 56px 24px 0; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); position: relative; transition: background .2s; }

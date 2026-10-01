@@ -303,12 +303,10 @@ def srcset(name):
 
 def flug():
     return f'''<section class="hero" aria-labelledby="hero-h">
- <picture class="hero-poster"><source media="(max-aspect-ratio: 4/5)" srcset="video/flug-hoch-poster.webp"><img src="video/flug-quer-poster.webp" alt="" width="1920" height="1080" fetchpriority="high"></picture>
- <video class="hero-video" muted loop playsinline preload="metadata"
-  data-quer="video/flug-quer.mp4" data-hoch="video/flug-hoch.mp4"
-  aria-label="Kamerafahrt durch ein von Ritter Immobilien verkauftes Bruchsteinhaus in Stolberg: Hofweg, Diele, Wohnzimmer, Garten">
-  <source src="video/flug-quer.mp4" type="video/mp4">
- </video>
+ <picture class="hero-poster">
+  <source media="(max-aspect-ratio: 4/5)" srcset="img/hero-haus-hoch.webp">
+  <img src="img/hero-haus-1600.webp" srcset="img/hero-haus-800.webp 800w, img/hero-haus-1600.webp 1600w, img/hero-haus-2400.webp 2400w, img/hero-haus-3200.webp 3200w" sizes="100vw" width="3200" height="2133" alt="Stolberger Bruchsteinhaus mit Hofweg und Garten – von Ritter Immobilien verkauft" fetchpriority="high">
+ </picture>
  <div class="hero-scrim" aria-hidden="true"></div>
  <div class="wrap hero-in">
   <h1 id="hero-h">Ritter Immobilien<span>Stolberg, seit 1989. Verkauf, Vermietung, Hausverwaltung.</span></h1>
@@ -317,8 +315,7 @@ def flug():
    <a class="path" href="kaeufer-warten.html"><span class="p-k">Ich möchte verkaufen</span><span class="p-t"><b>{len(SUCH)}</b> Suchaufträge warten</span></a>
   </div>
  </div>
- <button class="hero-pause" type="button" aria-pressed="false" aria-label="Video anhalten"><span aria-hidden="true"></span></button>
- <p class="hero-note">Video: ein von uns verkauftes Bruchsteinhaus in Stolberg</p>
+ <p class="hero-note">Ein von uns verkauftes Bruchsteinhaus in Stolberg</p>
 </section>'''
 
 def home():
